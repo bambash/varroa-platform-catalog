@@ -2,8 +2,5 @@ jenkins:
   remotingSecurity:
     enabled: true
 security:
-  crumb:
-    defaultCrumbIssuer:
-      excludeClientIPFromCrumb: false
   scriptApproval:
     approvedSignatures: []
