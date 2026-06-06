@@ -2,8 +2,8 @@ jenkins:
   remotingSecurity:
     enabled: true
 security:
-  globalJobDslSecurityConfiguration:
-    useScriptSecurity: true
-  csrf:
+  crumb:
     defaultCrumbIssuer:
       excludeClientIPFromCrumb: false
+  scriptApproval:
+    approvedSignatures: []
