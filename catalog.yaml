@@ -61,6 +61,14 @@ items:
     version: bundle
     tags: [quality, sonar]
 
+  - type: plugin
+    name: varroa-theme-plugin
+    displayName: "Varroa Theme Plugin"
+    description: "simple-theme-plugin required for Varroa-branded Jenkins CSS themes."
+    path: plugins/theme.yaml
+    version: bundle
+    tags: [theme, simple-theme]
+
   # ---- Items ----
   - type: item
     name: multibranch-pipeline
@@ -101,12 +109,12 @@ items:
     tags: [auth, oidc, dex]
 
   - type: jcasc
-    name: corporate-theme
-    displayName: "Corporate Theme + Banner"
-    description: "Dark theme, custom logo, and an environment banner on the masthead."
-    path: jcasc/appearance.yaml
-    version: "1.5.2"
-    tags: [theme, branding]
+    name: varroa-theme
+    displayName: "Varroa Branded Theme"
+    description: "Applies the Varroa visual identity (honey/caramel palette, warm surfaces) to the Jenkins UI via simple-theme-plugin."
+    path: jcasc/varroa-theme.yaml
+    version: "1.0.0"
+    tags: [theme, branding, varroa]
 
   # ---- RBAC ----
   - type: rbac
