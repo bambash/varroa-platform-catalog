@@ -4,4 +4,4 @@ plugins:
   - artifactId: pipeline-stage-view
     version: "2.34"
   - artifactId: pipeline-graph-view
-    version: "1.27"
+    version: "953.v23894ccf0079"
