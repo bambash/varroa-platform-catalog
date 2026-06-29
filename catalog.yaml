@@ -116,6 +116,14 @@ items:
     version: "1.0.0"
     tags: [theme, branding, varroa]
 
+  - type: jcasc
+    name: k8s-cloud
+    displayName: "Kubernetes Cloud (In-Cluster)"
+    description: "In-cluster Kubernetes cloud for dynamic agent pods. Namespace and Jenkins URL injected per-controller via varroa_controller_* vars."
+    path: jcasc/k8s-cloud.yaml
+    version: "1.0.0"
+    tags: [kubernetes, agents, cloud]
+
   # ---- RBAC ----
   - type: rbac
     name: developer-roles
