@@ -1,5 +1,5 @@
 plugins:
   - artifactId: kubernetes
-    version: "4253.v7700d91739e5"
+    version: "4423.vb_59f230b_ce53"
   - artifactId: kubernetes-credentials
-    version: "192.v4d5b_1c429d6b_"
+    version: "207.v492f58828b_ed"
