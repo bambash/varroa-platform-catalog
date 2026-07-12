@@ -5,6 +5,7 @@ jenkins:
         serverUrl: ""
         namespace: "${varroa_controller_namespace}"
         jenkinsUrl: "${varroa_controller_endpoint}"
+        webSocket: true
         connectTimeout: 5
         readTimeout: 15
         containerCap: 10
