@@ -1,5 +1,6 @@
 plugins:
+  # Versions are intentionally unpinned: the JenkinsVersionProfile plugin-set
+  # lock owns kubernetes plugin versions. Pinning here re-introduces the
+  # "plugin version conflict" reconcile failure whenever the lock is bumped.
   - artifactId: kubernetes
-    version: "4423.vb_59f230b_ce53"
   - artifactId: kubernetes-credentials
-    version: "207.v492f58828b_ed"
