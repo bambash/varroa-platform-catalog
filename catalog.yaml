@@ -165,14 +165,6 @@ items:
     tags: [security, csrf]
 
   - type: jcasc
-    name: oidc-realm
-    displayName: "OIDC via VarroaSecurityRealm"
-    description: "Wires the VarroaSecurityRealm using operator-injected ${varroa_oidc_*} variables. Zero manual secrets."
-    path: jcasc/oidc.yaml
-    version: "2.0.0"
-    tags: [auth, oidc, dex]
-
-  - type: jcasc
     name: varroa-theme
     displayName: "Varroa Branded Theme"
     description: "Applies the Varroa visual identity (honey/caramel palette, warm surfaces) to the Jenkins UI via simple-theme-plugin."
