@@ -139,13 +139,13 @@ items:
     version: "1.0.0"
     tags: [job, shared-library]
 
-  - type: item
-    name: seed-job
-    displayName: "Job DSL Seed"
-    description: "Seed pipeline generating a folder and pipeline job via job-dsl, the way real fleets manage job sprawl."
-    path: items/seed-job.yaml
-    version: "1.0.0"
-    tags: [job, job-dsl, seed]
+  - type: jcasc
+    name: seed-jobs
+    displayName: "Seed Jobs (Job DSL)"
+    description: "Seeds a generated folder and pipeline job through the JCasC jobs: root — runs as SYSTEM, no run-as configuration needed."
+    path: jcasc/seed-jobs.yaml
+    version: "2.0.0"
+    tags: [job-dsl, seed, jcasc]
 
   - type: item
     name: nightly-freestyle
