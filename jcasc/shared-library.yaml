@@ -1,0 +1,13 @@
+unclassified:
+  globalLibraries:
+    libraries:
+      - name: varroa-shared
+        defaultVersion: master
+        implicit: false
+        allowVersionOverride: true
+        retriever:
+          modernSCM:
+            libraryPath: "pipeline-library/"
+            scm:
+              git:
+                remote: "https://github.com/bambash/varroa-platform-catalog.git"

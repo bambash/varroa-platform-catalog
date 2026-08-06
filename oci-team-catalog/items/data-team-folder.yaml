@@ -1,0 +1,24 @@
+items:
+  - kind: folder
+    name: data
+    displayName: "Data Team"
+    description: "Data-team jobs, delivered from the team's OCI catalog."
+    items:
+      - kind: pipeline
+        name: go-smoke
+        displayName: "Go Toolchain Smoke"
+        description: "Prints the Go version inside the data team's go pod template."
+        definition:
+          script: |
+            pipeline {
+                agent { label 'go' }
+                stages {
+                    stage('Go version') {
+                        steps {
+                            container('go') {
+                                sh 'go version'
+                            }
+                        }
+                    }
+                }
+            }

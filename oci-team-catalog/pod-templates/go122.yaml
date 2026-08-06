@@ -1,0 +1,15 @@
+- name: go122
+  label: go
+  idleMinutes: 0
+  podRetention: "never"
+  containers:
+    - name: go
+      image: golang:1.22-bookworm
+      command: sleep
+      args: 99d
+      ttyEnabled: true
+      workingDir: /home/jenkins/agent
+      resourceRequestCpu: "500m"
+      resourceRequestMemory: "512Mi"
+      resourceLimitCpu: "2"
+      resourceLimitMemory: "2Gi"

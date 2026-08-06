@@ -23,10 +23,26 @@ items:
   - type: podtemplate
     name: dind
     displayName: "Docker-in-Docker Builder"
-    description: "Privileged DinD sidecar with BuildKit for image builds."
+    description: "Privileged DinD agent (docker:27-dind, label 'dind') with resource limits; pods never idle or linger."
     path: pod-templates/dind.yaml
-    version: "1.0.3"
+    version: "1.1.0"
     tags: [docker, buildkit]
+
+  - type: podtemplate
+    name: kaniko
+    displayName: "Kaniko Image Builder"
+    description: "Rootless container image builds with kaniko executor (label 'kaniko'); no privileged sidecar required."
+    path: pod-templates/kaniko.yaml
+    version: "1.0.0"
+    tags: [docker, kaniko, rootless]
+
+  - type: podtemplate
+    name: python312
+    displayName: "Python 3.12 Agent"
+    description: "Python 3.12 slim agent (label 'python') for scripting, tooling, and seed-job stages; 5-minute warm idle."
+    path: pod-templates/python312.yaml
+    version: "1.0.0"
+    tags: [python]
 
   # ---- Plugins ----
   - type: plugin
@@ -69,6 +85,22 @@ items:
     version: bundle
     tags: [theme, simple-theme]
 
+  - type: plugin
+    name: cicd-tools
+    displayName: "CI/CD Toolchain"
+    description: "job-dsl, docker-workflow, nodejs, jdk-tool, maven-plugin, and config-file-provider pinned to the platform plugin lock."
+    path: plugins/cicd-tools.yaml
+    version: bundle
+    tags: [job-dsl, docker, tools]
+
+  - type: plugin
+    name: varroa-mcp-tools
+    displayName: "Varroa MCP Tools"
+    description: "Varroa's Jenkins-side MCP tool extensions, served only from the in-cluster update center."
+    path: plugins/varroa-mcp-tools.yaml
+    version: bundle
+    tags: [mcp, varroa]
+
   # ---- Items ----
   - type: item
     name: multibranch-pipeline
@@ -90,6 +122,38 @@ items:
     tags: [folder, org]
     variables:
       - { name: team, description: "Team name used as folder name", required: true }
+
+  - type: item
+    name: dind-smoke
+    displayName: "DinD Smoke Test"
+    description: "Pipeline running docker run --rm hello-world inside the dind pod template."
+    path: items/dind-smoke.yaml
+    version: "1.0.0"
+    tags: [job, docker, smoke]
+
+  - type: item
+    name: lib-demo
+    displayName: "Shared Library Demo"
+    description: "Pipeline loading the varroa-shared library and greeting from a python agent pod."
+    path: items/lib-demo.yaml
+    version: "1.0.0"
+    tags: [job, shared-library]
+
+  - type: item
+    name: seed-job
+    displayName: "Job DSL Seed"
+    description: "Seed pipeline generating a folder and pipeline job via job-dsl, the way real fleets manage job sprawl."
+    path: items/seed-job.yaml
+    version: "1.0.0"
+    tags: [job, job-dsl, seed]
+
+  - type: item
+    name: nightly-freestyle
+    displayName: "Nightly Freestyle Cron"
+    description: "Legacy-style freestyle cron job; every real fleet still carries a few."
+    path: items/nightly-freestyle.yaml
+    version: "1.0.0"
+    tags: [job, freestyle, legacy]
 
   # ---- JCasC ----
   - type: jcasc
@@ -123,6 +187,38 @@ items:
     path: jcasc/k8s-cloud.yaml
     version: "1.0.0"
     tags: [kubernetes, agents, cloud]
+
+  - type: jcasc
+    name: global-tools
+    displayName: "Global Tool Installations"
+    description: "JDK 21, Maven 3.9, Node 20, and git tool installations plus a managed global Maven settings file."
+    path: jcasc/global-tools.yaml
+    version: "1.0.0"
+    tags: [tools, jdk, maven, node]
+
+  - type: jcasc
+    name: credentials-fixtures
+    displayName: "Dummy Credential Fixtures"
+    description: "Global-scope dummy usernamePassword and secret-text credentials for test controllers. Not real secrets."
+    path: jcasc/credentials.yaml
+    version: "1.0.0"
+    tags: [credentials, fixtures]
+
+  - type: jcasc
+    name: team-views
+    displayName: "Team List Views"
+    description: "A recursive 'CI' list view over smoke/seed/nightly/generated jobs alongside the default all view."
+    path: jcasc/views.yaml
+    version: "1.0.0"
+    tags: [views]
+
+  - type: jcasc
+    name: shared-library
+    displayName: "Varroa Shared Pipeline Library"
+    description: "Global pipeline library 'varroa-shared' retrieved from this catalog repo's pipeline-library/ directory."
+    path: jcasc/shared-library.yaml
+    version: "1.0.0"
+    tags: [shared-library, pipeline]
 
   # ---- RBAC ----
   - type: rbac

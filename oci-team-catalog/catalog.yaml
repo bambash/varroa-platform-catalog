@@ -1,0 +1,20 @@
+apiVersion: "1"
+name: team-data-catalog
+description: "Data-team catalog delivered as an OCI artifact — team-owned pod templates and items layered on top of the platform catalog."
+
+items:
+  - type: podtemplate
+    name: go122
+    displayName: "Go 1.22 Agent"
+    description: "Go 1.22 agent pod (label 'go') owned by the data team."
+    path: pod-templates/go122.yaml
+    version: "1.0.0"
+    tags: [go, data-team]
+
+  - type: item
+    name: data-team-folder
+    displayName: "Data Team Folder"
+    description: "The data team's folder with a Go toolchain smoke pipeline."
+    path: items/data-team-folder.yaml
+    version: "1.0.0"
+    tags: [folder, go, data-team]
