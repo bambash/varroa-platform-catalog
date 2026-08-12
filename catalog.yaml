@@ -33,7 +33,7 @@ items:
     displayName: "Kaniko Image Builder"
     description: "Rootless container image builds with kaniko executor (label 'kaniko'); no privileged sidecar required."
     path: pod-templates/kaniko.yaml
-    version: "1.0.0"
+    version: "1.1.0"
     tags: [docker, kaniko, rootless]
 
   - type: podtemplate
@@ -43,6 +43,14 @@ items:
     path: pod-templates/python312.yaml
     version: "1.0.0"
     tags: [python]
+
+  - type: podtemplate
+    name: golang
+    displayName: "Go Build Agent"
+    description: "Kubernetes agent pod with Go 1.26 (bookworm, cgo-capable for -race), emptyDir module/build caches, 5-minute warm idle."
+    path: pod-templates/golang.yaml
+    version: "1.0.0"
+    tags: [go, ci]
 
   # ---- Plugins ----
   - type: plugin
@@ -139,6 +147,14 @@ items:
     version: "1.0.0"
     tags: [job, shared-library]
 
+  - type: item
+    name: varroa-ci
+    displayName: "Varroa CI (Dogfood)"
+    description: "Declarative pipeline that builds and tests varroa-jenkins on a Varroa-managed controller: lint, race tests, generated-code drift checks, vulncheck, frontend, and no-push kaniko image builds."
+    path: items/varroa-ci.yaml
+    version: "1.0.0"
+    tags: [job, ci, dogfood]
+
   - type: jcasc
     name: seed-jobs
     displayName: "Seed Jobs (Job DSL)"
@@ -195,6 +211,14 @@ items:
     path: jcasc/credentials.yaml
     version: "1.0.0"
     tags: [credentials, fixtures]
+
+  - type: jcasc
+    name: ci-scm-credential
+    displayName: "CI SCM Deploy Key"
+    description: "SSH deploy-key credential (varroa-ci-deploy-key) sourced from a mounted Secret via readFile, plus accept-first-connection SSH host-key verification. Consumers MUST mount the Secret at /run/secrets/ssh-privatekey and set CASC_STRICT_SECRET_RESOLUTION=true, or the credential is silently created with an empty key."
+    path: jcasc/ci-scm-credential.yaml
+    version: "1.0.0"
+    tags: [credentials, ssh, ci]
 
   - type: jcasc
     name: team-views

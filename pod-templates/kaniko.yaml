@@ -7,7 +7,7 @@
       image: gcr.io/kaniko-project/executor:debug
       command: /busybox/cat
       ttyEnabled: true
-      resourceRequestCpu: "500m"
-      resourceRequestMemory: "1Gi"
+      resourceRequestCpu: "1"
+      resourceRequestMemory: "2Gi"
       resourceLimitCpu: "2"
-      resourceLimitMemory: "2Gi"
+      resourceLimitMemory: "4Gi"

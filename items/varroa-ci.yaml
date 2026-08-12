@@ -1,0 +1,91 @@
+items:
+  - kind: pipeline
+    name: varroa-ci
+    displayName: "Varroa CI (Dogfood)"
+    description: "Builds and tests varroa-jenkins on a Varroa-managed controller: lint, race tests, generated-code drift checks, vulncheck, frontend, and no-push kaniko image builds."
+    definition:
+      script: |
+        pipeline {
+            agent none
+            parameters {
+                string(name: 'branch', defaultValue: 'main', description: 'varroa-jenkins branch to build')
+            }
+            stages {
+                stage('CI') {
+                    parallel {
+                        stage('Lint') {
+                            agent { label 'golang' }
+                            steps {
+                                checkout scmGit(branches: [[name: params.branch]], userRemoteConfigs: [[url: 'git@github.com:bambash/varroa-jenkins.git', credentialsId: 'varroa-ci-deploy-key']])
+                                container('golang') {
+                                    sh 'go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@latest'
+                                    sh 'golangci-lint run --timeout 10m ./...'
+                                }
+                            }
+                        }
+                        stage('Test') {
+                            agent { label 'golang' }
+                            steps {
+                                checkout scmGit(branches: [[name: params.branch]], userRemoteConfigs: [[url: 'git@github.com:bambash/varroa-jenkins.git', credentialsId: 'varroa-ci-deploy-key']])
+                                container('golang') {
+                                    sh 'go vet ./...'
+                                    sh 'CGO_ENABLED=1 go test -race -count=1 ./...'
+                                }
+                            }
+                        }
+                        stage('Checks') {
+                            agent { label 'golang' }
+                            steps {
+                                checkout scmGit(branches: [[name: params.branch]], userRemoteConfigs: [[url: 'git@github.com:bambash/varroa-jenkins.git', credentialsId: 'varroa-ci-deploy-key']])
+                                container('golang') {
+                                    sh '''
+                                        rm -f charts/varroa/crds/*.yaml
+                                        go run sigs.k8s.io/controller-tools/cmd/controller-gen@v0.17.0 crd paths="./api/..." output:crd:dir=./charts/varroa/crds
+                                        git diff --exit-code -- charts/varroa/crds/
+                                        test -z "$(git status --porcelain charts/varroa/crds/)"
+                                    '''
+                                    sh 'make check-proto && make check-client && go run ./cmd/bootstrapdeps --check'
+                                }
+                            }
+                        }
+                        stage('Vulncheck') {
+                            agent { label 'golang' }
+                            steps {
+                                checkout scmGit(branches: [[name: params.branch]], userRemoteConfigs: [[url: 'git@github.com:bambash/varroa-jenkins.git', credentialsId: 'varroa-ci-deploy-key']])
+                                container('golang') {
+                                    sh 'go install golang.org/x/vuln/cmd/govulncheck@latest'
+                                    sh 'govulncheck ./...'
+                                }
+                            }
+                        }
+                        stage('Frontend') {
+                            agent { label 'node20' }
+                            steps {
+                                checkout scmGit(branches: [[name: params.branch]], userRemoteConfigs: [[url: 'git@github.com:bambash/varroa-jenkins.git', credentialsId: 'varroa-ci-deploy-key']])
+                                container('node') {
+                                    sh 'cd frontend && npm ci && npm run coverage && npm run build'
+                                }
+                            }
+                        }
+                        stage('Image-Backend') {
+                            agent { label 'kaniko' }
+                            steps {
+                                checkout scmGit(branches: [[name: params.branch]], userRemoteConfigs: [[url: 'git@github.com:bambash/varroa-jenkins.git', credentialsId: 'varroa-ci-deploy-key']])
+                                container('kaniko') {
+                                    sh """/kaniko/executor --context "$WORKSPACE" --dockerfile Dockerfile --build-arg GIT_SHA=$GIT_COMMIT --build-arg GIT_BRANCH=${params.branch} --no-push"""
+                                }
+                            }
+                        }
+                        stage('Image-Frontend') {
+                            agent { label 'kaniko' }
+                            steps {
+                                checkout scmGit(branches: [[name: params.branch]], userRemoteConfigs: [[url: 'git@github.com:bambash/varroa-jenkins.git', credentialsId: 'varroa-ci-deploy-key']])
+                                container('kaniko') {
+                                    sh """/kaniko/executor --context "$WORKSPACE/frontend" --dockerfile Dockerfile --no-push"""
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
