@@ -69,13 +69,10 @@ items:
                         }
                         stage('Image-Backend') {
                             agent { label 'kaniko' }
-                            environment {
-                                GIT_BRANCH_PARAM = params.branch
-                            }
                             steps {
                                 checkout scmGit(branches: [[name: params.branch]], userRemoteConfigs: [[url: 'git@github.com:bambash/varroa-jenkins.git', credentialsId: 'varroa-ci-deploy-key']])
                                 container('kaniko') {
-                                    sh 'set -e; /kaniko/executor --context "$WORKSPACE" --dockerfile Dockerfile --build-arg GIT_SHA=$GIT_COMMIT --build-arg GIT_BRANCH=$GIT_BRANCH_PARAM --no-push'
+                                    sh 'set -e; /kaniko/executor --context "$WORKSPACE" --dockerfile Dockerfile --build-arg GIT_SHA=$GIT_COMMIT --build-arg GIT_BRANCH=' + params.branch + ' --no-push'
                                 }
                             }
                         }

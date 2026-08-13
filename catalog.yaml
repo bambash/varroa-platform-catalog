@@ -152,7 +152,7 @@ items:
     displayName: "Varroa CI (Dogfood)"
     description: "Declarative pipeline that builds and tests varroa-jenkins on a Varroa-managed controller: lint, race tests, generated-code drift checks, vulncheck, frontend, and no-push kaniko image builds."
     path: items/varroa-ci.yaml
-    version: "1.1.0"
+    version: "1.2.0"
     tags: [job, ci, dogfood]
 
   - type: jcasc
