@@ -4,7 +4,7 @@
   podRetention: "never"
   containers:
     - name: node
-      image: mcr.microsoft.com/playwright:v1.44.1-jammy
+      image: mcr.microsoft.com/playwright:v1.62.1-noble
       command: sleep
       args: 99d
       ttyEnabled: true

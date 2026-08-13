@@ -39,6 +39,7 @@ items:
                                 checkout scmGit(branches: [[name: params.branch]], userRemoteConfigs: [[url: 'git@github.com:bambash/varroa-jenkins.git', credentialsId: 'varroa-ci-deploy-key']])
                                 container('golang') {
                                     sh '''
+                                        git config --global --add safe.directory '*'
                                         rm -f charts/varroa/crds/*.yaml
                                         go run sigs.k8s.io/controller-tools/cmd/controller-gen@v0.17.0 crd paths="./api/..." output:crd:dir=./charts/varroa/crds
                                         git diff --exit-code -- charts/varroa/crds/
@@ -84,7 +85,7 @@ items:
                             steps {
                                 checkout scmGit(branches: [[name: params.branch]], userRemoteConfigs: [[url: 'git@github.com:bambash/varroa-jenkins.git', credentialsId: 'varroa-ci-deploy-key']])
                                 container('kaniko') {
-                                    sh """/kaniko/executor --context "$WORKSPACE/frontend" --dockerfile Dockerfile --no-push"""
+                                    sh """/kaniko/executor --context "$WORKSPACE/frontend" --dockerfile frontend/Dockerfile --no-push"""
                                 }
                             }
                         }
