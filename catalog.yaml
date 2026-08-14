@@ -17,7 +17,7 @@ items:
     displayName: "Node 20 + Playwright"
     description: "Node 20 agent preloaded with Playwright browsers for end-to-end UI test stages."
     path: pod-templates/node20-playwright.yaml
-    version: "2.5.0"
+    version: "2.6.0"
     tags: [node, e2e, playwright]
 
   - type: podtemplate

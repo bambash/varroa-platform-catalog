@@ -10,7 +10,6 @@
       ttyEnabled: true
       workingDir: /home/jenkins/agent
       resourceRequestCpu: "500m"
-      resourceRequestMemory: 3Gi
+      resourceRequestMemory: 3073Mi
       resourceLimitCpu: "2"
       resourceLimitMemory: 4Gi
-      # repro-510 marker: 20260814T043407Z
