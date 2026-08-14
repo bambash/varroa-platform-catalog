@@ -13,3 +13,4 @@
       resourceRequestMemory: 3Gi
       resourceLimitCpu: "2"
       resourceLimitMemory: 4Gi
+      # repro-510 marker: 20260814T043407Z
