@@ -10,6 +10,6 @@
       ttyEnabled: true
       workingDir: /home/jenkins/agent
       resourceRequestCpu: "500m"
-      resourceRequestMemory: 3074Mi
+      resourceRequestMemory: 3Gi
       resourceLimitCpu: "2"
       resourceLimitMemory: 4Gi
