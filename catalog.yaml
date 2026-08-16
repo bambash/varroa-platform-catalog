@@ -52,6 +52,14 @@ items:
     version: "1.0.0"
     tags: [go, ci]
 
+  - type: podtemplate
+    name: scale-agent
+    displayName: "Scale-Test Agent"
+    description: "Busybox agent pod pinned to the workloads NodePool (nodeSelector + toleration merge) for the EKS ramp-campaign build wave. Deliberately not dind — echo+sleep pipelines exercise the full agent lifecycle without privileged per-pod Docker daemons."
+    path: pod-templates/scale-agent.yaml
+    version: "1.0.0"
+    tags: [scale-test, k8s, agents]
+
   # ---- Plugins ----
   - type: plugin
     name: pipeline-suite
@@ -164,6 +172,22 @@ items:
     tags: [job-dsl, seed, jcasc]
 
   - type: item
+    name: scale-smoke
+    displayName: "Scale Smoke Test"
+    description: "Echo + 30s sleep pipeline on the scale-agent pod template; the build-wave target for the EKS ramp campaign (pod schedule on the workloads pool, WebSocket connect-back, log streaming, teardown)."
+    path: items/scale-smoke.yaml
+    version: "1.0.0"
+    tags: [scale-test, job, smoke]
+
+  - type: jcasc
+    name: seed-jobs-scaletest
+    displayName: "Seed Jobs (Scale Test)"
+    description: "Seeds 3 echo+sleep-30s pipeline jobs on label 'scale-agent' through the JCasC jobs: root — hardcoded job count, reused identically across every controller in the ramp campaign."
+    path: jcasc/seed-jobs-scaletest.yaml
+    version: "1.0.0"
+    tags: [scale-test, job-dsl, seed, jcasc]
+
+  - type: item
     name: nightly-freestyle
     displayName: "Nightly Freestyle Cron"
     description: "Legacy-style freestyle cron job; every real fleet still carries a few."
@@ -195,6 +219,14 @@ items:
     path: jcasc/k8s-cloud.yaml
     version: "1.0.0"
     tags: [kubernetes, agents, cloud]
+
+  - type: jcasc
+    name: k8s-cloud-scaletest
+    displayName: "Kubernetes Cloud (Scale Test)"
+    description: "k8s-cloud variant for the EKS ramp campaign: containerCap raised to 30, default template pinned to the workloads NodePool. WebSocket connect-back already applies, same as the stock k8s-cloud item."
+    path: jcasc/k8s-cloud-scaletest.yaml
+    version: "1.0.0"
+    tags: [scale-test, kubernetes, agents, cloud]
 
   - type: jcasc
     name: global-tools

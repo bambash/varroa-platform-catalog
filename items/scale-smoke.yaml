@@ -1,0 +1,21 @@
+items:
+  - kind: pipeline
+    name: scale-smoke-test
+    displayName: "Scale Smoke Test"
+    description: "Echo + 30s sleep pipeline on the scale-agent pod template; exercises the full agent lifecycle (pod schedule on the workloads pool, WebSocket connect-back, log streaming, teardown) used as the build-wave target during the EKS ramp campaign."
+    definition:
+      script: |
+        pipeline {
+            agent { label 'scale-agent' }
+            options {
+                timeout(time: 5, unit: 'MINUTES')
+            }
+            stages {
+                stage('Smoke') {
+                    steps {
+                        echo 'scale-test smoke run'
+                        sh 'sleep 30'
+                    }
+                }
+            }
+        }

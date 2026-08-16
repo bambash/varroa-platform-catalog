@@ -1,0 +1,37 @@
+# Seed N=3 simple smoke pipelines per controller via the JCasC `jobs:` root
+# (job-dsl plugin), running on the scale-agent pod template. Runs as SYSTEM
+# at configuration-apply time, same as the platform's stock seed-jobs item.
+# N is hardcoded (not a ${varroa_controller_*} var) — this ComposedBundle is
+# reused identically across every controller in the ramp campaign, so a
+# per-controller-varying job count adds no signal.
+jobs:
+  - script: >
+      folder('scaletest') {
+          description('Scale-test generated pipelines (ramp-campaign build wave targets)')
+      }
+
+      (1..3).each { i ->
+          pipelineJob("scaletest/scale-job-${i}") {
+              definition {
+                  cps {
+                      script('''
+                          pipeline {
+                              agent { label 'scale-agent' }
+                              options {
+                                  timeout(time: 5, unit: 'MINUTES')
+                              }
+                              stages {
+                                  stage('Smoke') {
+                                      steps {
+                                          echo 'scale-test seeded job'
+                                          sh 'sleep 30'
+                                      }
+                                  }
+                              }
+                          }
+                      '''.stripIndent())
+                      sandbox(true)
+                  }
+              }
+          }
+      }
