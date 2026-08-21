@@ -18,7 +18,10 @@ items:
                             steps {
                                 checkout scmGit(branches: [[name: params.branch]], userRemoteConfigs: [[url: 'git@github.com:bambash/varroa-jenkins.git', credentialsId: 'varroa-ci-deploy-key']])
                                 container('golang') {
-                                    sh 'go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@latest'
+                                    // Pinned, and pinned to the same version as varroa-jenkins'
+                                    // own workflows. With @latest a golangci-lint release lands
+                                    // mid-week and this stage goes red on code nobody touched.
+                                    sh 'go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.12.2'
                                     sh 'golangci-lint run --timeout 10m ./...'
                                 }
                             }
