@@ -1,8 +1,8 @@
 plugins:
   - artifactId: job-dsl
-    version: "3654.vdf58f53e2d15"
+    version: "3732.v9a_c49a_61a_313"
   - artifactId: docker-workflow
-    version: "647.vf474049b_b_303"
+    version: "653.v2f2c08eff0ec"
   - artifactId: nodejs
     version: "1.6.6"
   - artifactId: jdk-tool
