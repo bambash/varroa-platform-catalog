@@ -160,7 +160,7 @@ items:
     displayName: "Varroa CI (Dogfood, cell tenant)"
     description: "The varroa-ci dogfood pipeline for a pipelines tenant on a cell: the same seven stages on the tenant's lifted pod templates (labels varroaci-golang, varroaci-node20, varroaci-kaniko), with junit reports and archived artifacts. Compose it with the golang, kaniko, and node20-playwright pod templates; project the deploy key as an sshPrivateKey tenant credential with id varroa-ci-deploy-key."
     path: items/varroa-ci-cell.yaml
-    version: "1.0.0"
+    version: "1.0.1"
     tags: [job, ci, dogfood, cell]
 
   - type: jcasc

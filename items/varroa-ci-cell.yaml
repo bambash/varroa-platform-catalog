@@ -32,7 +32,7 @@ items:
                                 checkout scmGit(branches: [[name: params.branch]], userRemoteConfigs: [[url: 'git@github.com:bambash/varroa-jenkins.git', credentialsId: 'varroa-ci-deploy-key']])
                                 container('golang') {
                                     sh 'go vet ./...'
-                                    sh 'go run gotest.tools/gotestsum@v1.12.0 --junitfile junit-go.xml -- -race -count=1 ./...'
+                                    sh 'go run gotest.tools/gotestsum@latest --junitfile junit-go.xml -- -race -count=1 ./...'
                                 }
                             }
                             post {
