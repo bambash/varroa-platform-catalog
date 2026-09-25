@@ -1,0 +1,111 @@
+items:
+  - kind: pipeline
+    name: varroa-ci
+    displayName: "Varroa CI (Dogfood, cell tenant)"
+    description: "Builds and tests varroa-jenkins as a pipelines tenant on a cell: lint, race tests with a junit report, generated-code drift checks, vulncheck, frontend with a junit report and archived dist, and no-push kaniko image builds. Agents come from the tenant's lifted pod templates."
+    definition:
+      script: |
+        pipeline {
+            agent none
+            parameters {
+                string(name: 'branch', defaultValue: 'main', description: 'varroa-jenkins branch to build')
+            }
+            stages {
+                stage('CI') {
+                    parallel {
+                        stage('Lint') {
+                            agent { label 'varroaci-golang' }
+                            steps {
+                                checkout scmGit(branches: [[name: params.branch]], userRemoteConfigs: [[url: 'git@github.com:bambash/varroa-jenkins.git', credentialsId: 'varroa-ci-deploy-key']])
+                                container('golang') {
+                                    // Pinned to the same golangci-lint version as the
+                                    // varroa-jenkins workflows. An unpinned linter turns this
+                                    // stage red on unchanged code when a release ships.
+                                    sh 'go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.12.2'
+                                    sh 'golangci-lint run --timeout 10m ./...'
+                                }
+                            }
+                        }
+                        stage('Test') {
+                            agent { label 'varroaci-golang' }
+                            steps {
+                                checkout scmGit(branches: [[name: params.branch]], userRemoteConfigs: [[url: 'git@github.com:bambash/varroa-jenkins.git', credentialsId: 'varroa-ci-deploy-key']])
+                                container('golang') {
+                                    sh 'go vet ./...'
+                                    sh 'go run gotest.tools/gotestsum@v1.12.0 --junitfile junit-go.xml -- -race -count=1 ./...'
+                                }
+                            }
+                            post {
+                                always {
+                                    junit allowEmptyResults: true, testResults: 'junit-go.xml'
+                                }
+                            }
+                        }
+                        stage('Checks') {
+                            agent { label 'varroaci-golang' }
+                            steps {
+                                checkout scmGit(branches: [[name: params.branch]], userRemoteConfigs: [[url: 'git@github.com:bambash/varroa-jenkins.git', credentialsId: 'varroa-ci-deploy-key']])
+                                container('golang') {
+                                    sh '''
+                                        git config --global --add safe.directory '*'
+                                        rm -f charts/varroa/crds/*.yaml
+                                        go run sigs.k8s.io/controller-tools/cmd/controller-gen@v0.17.0 crd paths="./api/..." output:crd:dir=./charts/varroa/crds
+                                        git diff --exit-code -- charts/varroa/crds/
+                                        test -z "$(git status --porcelain charts/varroa/crds/)"
+                                    '''
+                                    sh 'make check-proto && make check-client && go run ./cmd/bootstrapdeps --check'
+                                }
+                            }
+                        }
+                        stage('Vulncheck') {
+                            agent { label 'varroaci-golang' }
+                            steps {
+                                checkout scmGit(branches: [[name: params.branch]], userRemoteConfigs: [[url: 'git@github.com:bambash/varroa-jenkins.git', credentialsId: 'varroa-ci-deploy-key']])
+                                container('golang') {
+                                    sh 'go install golang.org/x/vuln/cmd/govulncheck@latest'
+                                    sh 'GOMEMLIMIT=6GiB govulncheck ./...'
+                                }
+                            }
+                        }
+                        stage('Frontend') {
+                            agent { label 'varroaci-node20' }
+                            steps {
+                                checkout scmGit(branches: [[name: params.branch]], userRemoteConfigs: [[url: 'git@github.com:bambash/varroa-jenkins.git', credentialsId: 'varroa-ci-deploy-key']])
+                                container('node') {
+                                    sh 'cd frontend && npm ci && npx vitest run --coverage --reporter=default --reporter=junit --outputFile.junit=junit-frontend.xml && npm run build'
+                                }
+                            }
+                            post {
+                                always {
+                                    junit allowEmptyResults: true, testResults: 'frontend/junit-frontend.xml'
+                                }
+                                success {
+                                    archiveArtifacts artifacts: 'frontend/dist/**', allowEmptyArchive: true
+                                }
+                            }
+                        }
+                        stage('Image-Backend') {
+                            agent { label 'varroaci-kaniko' }
+                            steps {
+                                script {
+                                    def scmVars = checkout(scmGit(branches: [[name: params.branch]], userRemoteConfigs: [[url: 'git@github.com:bambash/varroa-jenkins.git', credentialsId: 'varroa-ci-deploy-key']]))
+                                    env.GIT_COMMIT = scmVars.GIT_COMMIT
+                                }
+                                container('kaniko') {
+                                    sh 'set -e; /kaniko/executor --context "$WORKSPACE" --dockerfile Dockerfile --build-arg GIT_SHA=$GIT_COMMIT --build-arg GIT_BRANCH=' + params.branch + ' --no-push'
+                                }
+                            }
+                        }
+                        stage('Image-Frontend') {
+                            agent { label 'varroaci-kaniko' }
+                            steps {
+                                checkout scmGit(branches: [[name: params.branch]], userRemoteConfigs: [[url: 'git@github.com:bambash/varroa-jenkins.git', credentialsId: 'varroa-ci-deploy-key']])
+                                container('kaniko') {
+                                    sh """/kaniko/executor --context "$WORKSPACE/frontend" --dockerfile frontend/Dockerfile --no-push"""
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
