@@ -1,0 +1,44 @@
+apiVersion: "1"
+name: varroa-platform-catalog-private
+description: "Private items of the platform catalog. The public export excludes this directory."
+
+items:
+  - type: podtemplate
+    name: node20-playwright
+    displayName: "Node 20 + Playwright"
+    description: "Node 20 agent preloaded with Playwright browsers for end-to-end UI test stages."
+    path: pod-templates/node20-playwright.yaml
+    version: "2.8.0"
+    tags: [node, e2e, playwright]
+
+  - type: plugin
+    name: varroa-mcp-tools
+    displayName: "Varroa MCP Tools"
+    description: "Varroa's Jenkins-side MCP tool extensions, served only from the in-cluster update center."
+    path: plugins/varroa-mcp-tools.yaml
+    version: bundle
+    tags: [mcp, varroa]
+
+  - type: item
+    name: varroa-ci
+    displayName: "Varroa CI (Dogfood)"
+    description: "Declarative pipeline that builds and tests varroa-jenkins on a Varroa-managed controller: lint, race tests, generated-code drift checks, vulncheck, frontend, and no-push kaniko image builds."
+    path: items/varroa-ci.yaml
+    version: "1.5.0"
+    tags: [job, ci, dogfood]
+
+  - type: item
+    name: varroa-ci-cell
+    displayName: "Varroa CI (Dogfood, cell tenant)"
+    description: "The varroa-ci dogfood pipeline for a pipelines tenant on a cell: the same seven stages on the tenant's lifted pod templates (labels varroaci-golang, varroaci-node20, varroaci-kaniko), with junit reports and archived artifacts. Compose it with the golang, kaniko, and node20-playwright pod templates; project the deploy key as an sshPrivateKey tenant credential with id varroa-ci-deploy-key."
+    path: items/varroa-ci-cell.yaml
+    version: "1.0.1"
+    tags: [job, ci, dogfood, cell]
+
+  - type: jcasc
+    name: ci-scm-credential
+    displayName: "CI SCM Deploy Key"
+    description: "SSH deploy-key credential (varroa-ci-deploy-key) sourced from a mounted Secret via readFile, plus accept-first-connection SSH host-key verification. Consumers MUST mount the Secret at /run/secrets/ssh-privatekey and set CASC_STRICT_SECRET_RESOLUTION=true, or the credential is silently created with an empty key."
+    path: jcasc/ci-scm-credential.yaml
+    version: "1.0.0"
+    tags: [credentials, ssh, ci]
