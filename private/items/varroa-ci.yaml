@@ -57,7 +57,10 @@ items:
                             steps {
                                 checkout scmGit(branches: [[name: params.branch]], userRemoteConfigs: [[url: 'git@github.com:bambash/varroa-jenkins.git', credentialsId: 'varroa-ci-deploy-key']])
                                 container('golang') {
-                                    sh 'go install golang.org/x/vuln/cmd/govulncheck@latest'
+                                    // Pinned, and pinned to the same version as varroa-jenkins'
+                                    // own workflows. With @latest a govulncheck release can turn
+                                    // this stage red on code nobody touched.
+                                    sh 'go install golang.org/x/vuln/cmd/govulncheck@v1.9.0'
                                     sh 'govulncheck ./...'
                                 }
                             }
